@@ -32,22 +32,13 @@ On Windows PowerShell:
 
 ## Configuration
 
-Set these properties in `application.properties`:
+Use `src/main/resources/application-example.properties` as the template for local or server configuration.
 
-- `spring.data.mongodb.uri`
-- `spring.data.mongodb.auto-index-creation`
-- `spring.redis.host`
-- `spring.redis.port`
-- `spring.mail.host`
-- `spring.mail.port`
-- `spring.mail.username`
-- `spring.mail.password`
-- `spring.mail.properties.mail.smtp.auth`
-- `spring.mail.properties.mail.smtp.starttls.enable`
-- `weather.api.key`
-- `jwt.secret`
-- `spring.kafka.bootstrap-servers`
-- `spring.kafka.consumer.group-id`
+## API Docs (Swagger)
+
+- UI: `/swagger-ui/index.html`
+- OpenAPI JSON: `/v3/api-docs`
+- JWT auth is configured as Bearer token in Swagger Authorize dialog.
 
 ## API Overview
 
