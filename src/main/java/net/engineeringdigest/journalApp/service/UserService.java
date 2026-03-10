@@ -1,16 +1,12 @@
 package net.engineeringdigest.journalApp.service;
 
 import lombok.extern.slf4j.Slf4j;
-import net.engineeringdigest.journalApp.controller.JournalEntryController;
 import net.engineeringdigest.journalApp.entity.User;
 import net.engineeringdigest.journalApp.repository.UserRepository;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -32,11 +28,7 @@ public class UserService {
             userRepository.save(user);
             return true;
         } catch (Exception e) {
-            log.error("hahahhahhahahahah");
-            log.warn("hahahhahhahahahah");
-            log.info("hahahhahhahahahah");
-            log.debug("hahahhahhahahahah");
-            log.trace("hahahhahhahahahah");
+            log.error("Failed to save new user", e);
             return false;
         }
     }
@@ -49,6 +41,29 @@ public class UserService {
 
     public void saveUser(User user) {
         userRepository.save(user);
+    }
+
+    public boolean updateUser(String currentUserName, User updatedUser) {
+        try {
+            User userInDb = userRepository.findByUserName(currentUserName);
+            if (userInDb == null) {
+                return false;
+            }
+            if (updatedUser.getUserName() != null && !updatedUser.getUserName().trim().isEmpty()) {
+                userInDb.setUserName(updatedUser.getUserName().trim());
+            }
+            if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
+                userInDb.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            }
+            if (updatedUser.getEmail() != null) {
+                userInDb.setEmail(updatedUser.getEmail());
+            }
+            userRepository.save(userInDb);
+            return true;
+        } catch (Exception ex) {
+            log.error("Failed to update user {}", currentUserName, ex);
+            return false;
+        }
     }
 
     public List<User> getAll() {

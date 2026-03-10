@@ -10,10 +10,14 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EmailService {
 
-    @Autowired
+    @Autowired(required = false)
     private JavaMailSender javaMailSender;
 
     public void sendEmail(String to, String subject, String body) {
+        if (javaMailSender == null) {
+            log.warn("JavaMailSender is not configured. Skipping email to {}", to);
+            return;
+        }
         try {
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(to);

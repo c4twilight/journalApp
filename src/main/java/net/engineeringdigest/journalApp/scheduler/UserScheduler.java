@@ -7,6 +7,7 @@ import net.engineeringdigest.journalApp.enums.Sentiment;
 import net.engineeringdigest.journalApp.model.SentimentData;
 import net.engineeringdigest.journalApp.repository.UserRepositoryImpl;
 import net.engineeringdigest.journalApp.service.EmailService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class UserScheduler {
 
 
@@ -37,7 +39,13 @@ public class UserScheduler {
 
     @Scheduled(cron = "0 0 9 * * SUN")
     public void fetchUsersAndSendSaMail() {
-        List<User> users = userRepository.getUserForSA();
+        List<User> users;
+        try {
+            users = userRepository.getUserForSA();
+        } catch (Exception ex) {
+            log.warn("Skipping sentiment email run because users could not be fetched.", ex);
+            return;
+        }
         for (User user : users) {
             List<JournalEntry> journalEntries = user.getJournalEntries();
             List<Sentiment> sentiments = journalEntries.stream().filter(x -> x.getDate().isAfter(LocalDateTime.now().minus(7, ChronoUnit.DAYS))).map(x -> x.getSentiment()).collect(Collectors.toList());

@@ -1,5 +1,6 @@
 package net.engineeringdigest.journalApp.cache;
 
+import lombok.extern.slf4j.Slf4j;
 import net.engineeringdigest.journalApp.entity.ConfigJournalAppEntity;
 import net.engineeringdigest.journalApp.repository.ConfigJournalAppRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class AppCache {
 
     public enum keys{
@@ -25,9 +27,14 @@ public class AppCache {
     @PostConstruct
     public void init(){
         appCache = new HashMap<>();
-        List<ConfigJournalAppEntity> all = configJournalAppRepository.findAll();
-        for (ConfigJournalAppEntity configJournalAppEntity : all) {
-            appCache.put(configJournalAppEntity.getKey(), configJournalAppEntity.getValue());
+        try {
+            List<ConfigJournalAppEntity> all = configJournalAppRepository.findAll();
+            for (ConfigJournalAppEntity configJournalAppEntity : all) {
+                appCache.put(configJournalAppEntity.getKey(), configJournalAppEntity.getValue());
+            }
+        } catch (Exception ex) {
+            // Keep app startup alive even when external DB is unavailable.
+            log.warn("Unable to refresh app cache from DB. Continuing with in-memory defaults.", ex);
         }
     }
 
