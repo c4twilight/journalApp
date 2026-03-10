@@ -20,9 +20,9 @@ jobs:
           distribution: zulu
           cache: maven
       - name: Run unit tests
-        run: ./mvnw -B test
+        run: mvn -B test
       - name: Build package
-        run: ./mvnw -B -DskipTests verify
+        run: mvn -B -DskipTests verify
 
   sonar:
     name: SonarCloud analyze
@@ -54,7 +54,7 @@ jobs:
             echo "SONAR_TOKEN is not configured. Skipping SonarCloud analysis."
             exit 0
           fi
-          ./mvnw -B \
+          mvn -B \
             org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} \
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }} \
